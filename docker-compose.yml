@@ -67,9 +67,9 @@ services:
       # Add your Telegram and other environment variables here
       - GMAIL_USER=${GMAIL_USER:-}
       - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
-      - TELEGRAM_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN:-}
       - CHAT_ID=${CHAT_ID:-}
-      - ALLOWED_SENDERS=${ALLOWED_SENDERS:-}
+      - ALLOWED_SENDER=${ALLOWED_SENDER:-}
       - SLEEPTIME=${SLEEPTIME:-60}
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
