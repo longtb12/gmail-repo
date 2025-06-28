@@ -1,0 +1,90 @@
+version: '3.8'
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: netflix-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-}
+      MYSQL_USER: ${MYSQL_USER:-}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - netflix-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD:-}"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 30s
+
+  # Gmail Viewer App (Next.js)
+  gmail-viewer:
+    build:
+      context: ./gmail-viewer-app
+      dockerfile: Dockerfile
+    container_name: netflix-gmail-viewer
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST:-}
+      - MYSQL_USER=${MYSQL_USER:-}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-}
+      - MYSQL_PORT=3306
+      - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - netflix-network
+    volumes:
+      - ./gmail-viewer-app:/app
+      - /app/node_modules
+      - /app/.next
+
+  # Mail to Telegram Service (Python)
+  mail-to-telegram:
+    build:
+      context: ./mail-to-telegram
+      dockerfile: Dockerfile
+    container_name: netflix-mail-telegram
+    restart: unless-stopped
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST:-}
+      - MYSQL_USER=${MYSQL_USER:-}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-}
+      - MYSQL_PORT=3306
+      - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
+      # Add your Telegram and other environment variables here
+      - GMAIL_USER=${GMAIL_USER:-}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD:-}
+      - TELEGRAM_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - CHAT_ID=${CHAT_ID:-}
+      - ALLOWED_SENDERS=${ALLOWED_SENDERS:-}
+      - SLEEPTIME=${SLEEPTIME:-60}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - netflix-network
+    volumes:
+      - ./mail-to-telegram:/app
+
+volumes:
+  mysql_data:
+
+networks:
+  netflix-network:
+    driver: bridge
