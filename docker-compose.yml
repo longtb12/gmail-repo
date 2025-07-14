@@ -81,6 +81,9 @@ services:
       - netflix-network
     volumes:
       - ./mail-to-telegram:/app
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
 
 volumes:
   mysql_data:

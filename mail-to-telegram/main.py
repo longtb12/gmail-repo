@@ -176,13 +176,13 @@ def monitor_emails():
                 time.sleep(sleep_time)        
         except Exception as e:
             logger.error(f"Error: {e}")
-            time.sleep(sleep_time)  
+            time.sleep(sleep_time*5)  
         finally:
             try:
                 mail.logout()
             except:
                 pass
-            time.sleep(1)  
+            time.sleep(sleep_time)  
 
 if __name__ == '__main__':
     logger.info("Starting email monitoring...")
