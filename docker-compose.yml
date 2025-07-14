@@ -23,6 +23,7 @@ services:
       retries: 10
       interval: 10s
       start_period: 30s
+    mem_limit: 256m
 
   # Gmail Viewer App (Next.js)
   gmail-viewer:
@@ -84,6 +85,8 @@ services:
     dns:
       - 8.8.8.8
       - 1.1.1.1
+    mem_limit: 256m
+    cpus: 0.5
 
 volumes:
   mysql_data:
