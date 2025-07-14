@@ -1,29 +1,29 @@
 version: '3.8'
 services:
   # MySQL Database
-  mysql:
-    image: mysql:8.0
-    container_name: netflix-mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-}
-      MYSQL_USER: ${MYSQL_USER:-}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./docker/mysql-init:/docker-entrypoint-initdb.d
-    networks:
-      - netflix-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD:-}"]
-      timeout: 20s
-      retries: 10
-      interval: 10s
-      start_period: 30s
-    mem_limit: 256m
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: netflix-mysql
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-}
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE:-}
+  #     MYSQL_USER: ${MYSQL_USER:-}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD:-}
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #     - ./docker/mysql-init:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - netflix-network
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_PASSWORD:-}"]
+  #     timeout: 20s
+  #     retries: 10
+  #     interval: 10s
+  #     start_period: 30s
+  #   mem_limit: 256m
 
   # Gmail Viewer App (Next.js)
   gmail-viewer:
@@ -41,9 +41,9 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE:-}
       - MYSQL_PORT=3306
       - MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL=true
-    depends_on:
-      mysql:
-        condition: service_healthy
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
     networks:
       - netflix-network
     volumes:
@@ -75,9 +75,9 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
       - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-}
-    depends_on:
-      mysql:
-        condition: service_healthy
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
     networks:
       - netflix-network
     volumes:
@@ -88,8 +88,8 @@ services:
     mem_limit: 256m
     cpus: 0.5
 
-volumes:
-  mysql_data:
+# volumes:
+#   mysql_data:
 
 networks:
   netflix-network:
